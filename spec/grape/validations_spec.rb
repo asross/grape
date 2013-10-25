@@ -94,6 +94,10 @@ describe Grape::Validations do
         get '/required'
         last_response.status.should == 400
         last_response.body.should == 'items[key] is missing'
+
+        get '/required', items: []
+        last_response.status.should == 400
+        last_response.body.should == 'items[key] is missing'
       end
 
       it "doesn't throw a missing param when param is present" do
@@ -232,6 +236,12 @@ describe Grape::Validations do
         get '/nested_optional_group', items: { key: 'foo', required_subitems: { value: 'bar' }, optional_subitems: { value: 'baz' } }
         last_response.status.should == 200
         last_response.body.should == 'nested optional group works'
+      end
+
+      it 'handles arrays' do
+        get '/nested_optional_group', items: [ { key: 'foo' } ]
+        last_response.status.should == 400
+        last_response.body.should == 'items[required_subitems][value] is missing'
       end
 
       it 'adds to declared parameters' do
